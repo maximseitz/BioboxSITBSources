@@ -25,64 +25,74 @@
             .ui-layout-pane-center.ui-widget-content{
                 border: 0;
             }
+            .preformatted {
+                white-space: pre-wrap;
+            }
         </script>
     </h:head>
     <h:body>
-        <p:layout fullPage="true">
 
-            <p:layoutUnit position="north" size="20">
-            </p:layoutUnit>
+        <h:form id="form">
 
-            <p:layoutUnit position="south" size="20">
-            </p:layoutUnit>
+            <p:growl id="growl" showDetail="true" autoUpdate="true" />
 
-            <p:layoutUnit position="west" size="40">
-            </p:layoutUnit>
+            <p:layout fullPage="true">
 
-            <p:layoutUnit position="east" size="40">
-            </p:layoutUnit>
+                <p:layoutUnit position="north" size="20">
+                </p:layoutUnit>
 
-            <p:layoutUnit position="center">
-                <h:form id="form">
+                <p:layoutUnit position="south" size="20">
+                </p:layoutUnit>
 
-                    <p:growl id="growl" showDetail="true" />
+                <p:layoutUnit position="west" size="40">
+                </p:layoutUnit>
+
+                <p:layoutUnit position="east" size="40">
+                </p:layoutUnit>
+
+                <p:layoutUnit position="center">
 
                     <h3 style="margin-top:0">Welcome to the BioBoxes GUI</h3>
-                    <p:tabView>
-                        <p:tab title="Assembler">
-                            <p:dataTable id="assemblerDT" 
-                                         var="assembler" 
-                                         value="#{sessionController.assembler}" 
-                                         selection="#{sessionController.selectedAssembler}" 
-                                         rowKey="#{sessionController.selectedAssembler.id}">
-                                <f:facet name="header">
-                                    Single with Row Click
-                                </f:facet>
-                                <p:column headerText="Assembler ID">
-                                    <h:outputText value="#{assembler.id}" />
-                                </p:column>
-                                <p:column headerText="Assembler Name">
-                                    <h:outputText value="#{assembler.name}" />
-                                </p:column>
-                                <f:facet name="footer">
-                                    <p:commandButton update="growl" action="#{sessionController.startBioBox}" icon="ui-icon-search" value="Start BioBox" />
-                                </f:facet>
-                            </p:dataTable>
-                        </p:tab>
-                        <p:tab title="Other Tools">
-                            <h:panelGrid columns="2" cellpadding="10">
-                                <h:outputText value="Francis Ford Coppola's legendary..." />
-                            </h:panelGrid>
-                        </p:tab>
-                        <p:tab title="Other Tools 2">
-                            <h:panelGrid columns="2" cellpadding="10">
-                                <h:outputText value="After a break of more than 15 years..." />
-                            </h:panelGrid>
-                        </p:tab>
-                    </p:tabView>
-                </h:form>
-            </p:layoutUnit>
 
-        </p:layout>
+                    <p:panel id="assemblerPanel" >
+                        
+                        <p:dataTable id="assemblerDT" 
+                                     var="assembler" 
+                                     value="#{sessionController.assembler}" 
+                                     selection="#{sessionController.selectedAssembler}" 
+                                     selectionMode="single"
+                                     rowKey="#{assembler.id}"
+                                     rendered="#{sessionController.readCompletely eq false and sessionController.active eq false}">
+
+                            <f:facet name="header">
+                                Overview of all available BioBoxes-Assembler
+                            </f:facet>
+
+                            <p:column headerText="Assembler ID">
+                                <h:outputText value="#{assembler.id}" />
+                            </p:column>
+
+                            <p:column headerText="Assembler Name">
+                                <h:outputText value="#{assembler.name}" />
+                            </p:column>
+
+                            <f:facet name="footer">
+                                <p:commandButton action="#{sessionController.startBioBox}" onclick="PF('poller').start()" icon="ui-icon-search" value="Start BioBox" />
+                            </f:facet>
+
+                        </p:dataTable>
+
+                        <p:scrollPanel widgetVar="scroller" rendered="#{sessionController.readCompletely or sessionController.active}" style="width: 100%; height: 200px; background-color: black; color: white;">
+                            <h:outputText escape="false" id="result" value="#{sessionController.result}" styleClass="preformatted" />
+                        </p:scrollPanel>
+                    </p:panel>
+
+                    <p:poll widgetVar="poller" stop="#{sessionController.readCompletely}" autoStart="false" update="assemblerPanel" global="false" listener="#{sessionController.scroll()}" />
+
+                </p:layoutUnit>
+
+            </p:layout>
+
+        </h:form>
     </h:body>
 </html>
