@@ -46,6 +46,8 @@ public class SessionController implements Serializable {
     public void init() {
         assembler = new ArrayList<Assembler>();
         assembler.add(new Assembler(1, "bioboxes/megahit"));
+        assembler.add(new Assembler(2, "bioboxes/sparse"));
+        assembler.add(new Assembler(3, "bioboxes/sga"));
 
         readCompletely = false;
         active = false;
@@ -56,7 +58,6 @@ public class SessionController implements Serializable {
         if (selectedAssembler == null) {
             FacesContext fc = FacesContext.getCurrentInstance();
             fc.addMessage(null, new FacesMessage("You have to select an Assembler first ..."));
-            return;
         } else {
             final String assemblerName = selectedAssembler.getName();
             active = true;
@@ -144,6 +145,13 @@ public class SessionController implements Serializable {
         }
     }
 
+    
+    public void resetExecution() {
+        readCompletely = false;
+        active = false;
+        result.delete(0, result.length());
+    }
+    
     public void scroll() {
         RequestContext rc = RequestContext.getCurrentInstance();
         rc.execute("PF('scroller').scrollY(1000)");
