@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <script type="text/css">
+            .ui-layout-pane-north.ui-widget-content{
+                border: 0;
+            }
+
+            .ui-layout-pane-south.ui-widget-content{
+                border: 0;
+            }
+
+            .ui-layout-pane-east.ui-widget-content{
+                border: 0;
+            }
+
+            .ui-layout-pane-west.ui-widget-content{
+                border: 0;
+            }
+
+            .ui-layout-pane-center.ui-widget-content{
+                border: 0;
+            }
+        </script>
+    </h:head>
+    <h:body>
+        <p:layout fullPage="true">
+
+            <p:layoutUnit position="north" size="20">
+            </p:layoutUnit>
+
+            <p:layoutUnit position="south" size="20">
+            </p:layoutUnit>
+
+            <p:layoutUnit position="west" size="40">
+            </p:layoutUnit>
+
+            <p:layoutUnit position="east" size="40">
+            </p:layoutUnit>
+
+            <p:layoutUnit position="center">
+                <h:form id="form">
+
+                    <p:growl id="growl" showDetail="true" />
+
+                    <h3 style="margin-top:0">Welcome to the BioBoxes GUI</h3>
+                    <p:tabView>
+                        <p:tab title="Assembler">
+                            <p:dataTable id="assemblerDT" 
+                                         var="assembler" 
+                                         value="#{sessionController.assembler}" 
+                                         selection="#{sessionController.selectedAssembler}" 
+                                         rowKey="#{sessionController.selectedAssembler.id}">
+                                <f:facet name="header">
+                                    Single with Row Click
+                                </f:facet>
+                                <p:column headerText="Assembler ID">
+                                    <h:outputText value="#{assembler.id}" />
+                                </p:column>
+                                <p:column headerText="Assembler Name">
+                                    <h:outputText value="#{assembler.name}" />
+                                </p:column>
+                                <f:facet name="footer">
+                                    <p:commandButton update="growl" action="#{sessionController.startBioBox}" icon="ui-icon-search" value="Start BioBox" />
+                                </f:facet>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Other Tools">
+                            <h:panelGrid columns="2" cellpadding="10">
+                                <h:outputText value="Francis Ford Coppola's legendary..." />
+                            </h:panelGrid>
+                        </p:tab>
+                        <p:tab title="Other Tools 2">
+                            <h:panelGrid columns="2" cellpadding="10">
+                                <h:outputText value="After a break of more than 15 years..." />
+                            </h:panelGrid>
+                        </p:tab>
+                    </p:tabView>
+                </h:form>
+            </p:layoutUnit>
+
+        </p:layout>
+    </h:body>
+</html>
