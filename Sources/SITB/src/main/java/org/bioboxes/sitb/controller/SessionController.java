@@ -118,9 +118,14 @@ public class SessionController implements Serializable {
                          * Start Process and read from stdin.
                          */
                         Runtime r = Runtime.getRuntime();
-                        Process process = r.exec("docker run --volume='/tmp/input_data:/bbx/input:ro' --volume='/tmp/output_data:/bbx/output:rw' --rm " + assemblerName + " default");
+                        Process process = r.exec("docker run "
+                                + "--volume='/tmp/input_data:/bbx/input:ro' "
+                                + "--volume='/tmp/output_data:/bbx/output:rw' "
+                                + "--rm " 
+                                + assemblerName 
+                                + " default "
+                                + "2>&1");
 
-//                        BufferedReader in = new BufferedReader(new InputStreamReader(process.getErrorStream()));
                         BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
                         String inputLine = "";
