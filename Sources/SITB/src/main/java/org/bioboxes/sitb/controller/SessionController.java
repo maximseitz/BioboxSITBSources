@@ -28,7 +28,7 @@ import org.primefaces.context.RequestContext;
 
 /**
  *
- * @author jsteiner and mugarov
+ * @author jsteiner and mugarov  - this is a TEST
  */
 @ManagedBean
 @SessionScoped
