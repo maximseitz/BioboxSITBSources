@@ -72,7 +72,7 @@ public class BioboxesMesosScheduler implements Scheduler {
         for (Protos.Offer offer : offers) {
 
             List<Protos.TaskInfo> tasks = new ArrayList<>();
-            
+
             if (runningInstances.size() + pendingInstances.size() < desiredInstances) {
 
                 // generate a unique task ID
@@ -138,6 +138,10 @@ public class BioboxesMesosScheduler implements Scheduler {
             case TASK_FINISHED:
                 pendingInstances.remove(taskId);
                 runningInstances.remove(taskId);
+                if (runningInstances.isEmpty()) {
+                    BioboxesMesos.slavePID.destroy();
+//                    BioboxesMesos.masterPID.destroy();
+                }
                 break;
         }
 

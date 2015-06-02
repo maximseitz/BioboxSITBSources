@@ -6,6 +6,7 @@
 package org.bioboxes.sitb.mesos;
 
 import com.google.protobuf.ByteString;
+import java.io.File;
 import java.io.IOException;
 import org.apache.mesos.*;
 import org.apache.mesos.Protos.*;
@@ -16,6 +17,9 @@ import org.slf4j.LoggerFactory;
  * @author jsteiner
  */
 public class BioboxesMesos {
+    
+    public static Process masterPID;
+    public static Process slavePID;
 
     /**
      * Logger.
@@ -31,9 +35,10 @@ public class BioboxesMesos {
     }
 
     public static void startMesosMaster() {
+        new File("/tmp/mesos").mkdir();
         Runtime r = Runtime.getRuntime();
         try {
-            r.exec("nohup mesos-master --ip=127.0.0.1 --work_dir=/tmp >/tmp/mesos-master.log 2>&1 &");
+            masterPID = r.exec("nohup mesos-master --ip=127.0.0.1 --work_dir=/tmp >/tmp/mesos-master.log 2>&1 &");
             logger.info("[SUCCESS] MesosMaster started successfuly at 127.0.0.1:5050");
         } catch (IOException ex) {
             logger.error("[FATAL] Error on starting MesosMaster");
@@ -43,7 +48,7 @@ public class BioboxesMesos {
     public static void startMesosSlave() {
         Runtime r = Runtime.getRuntime();
         try {
-            r.exec("nohup mesos-slave --master=127.0.0.1:5050 --containerizers=docker,mesos >/tmp/mesos-slave.log 2>&1 &");
+            slavePID = r.exec("nohup mesos-slave --master=127.0.0.1:5050 --containerizers=docker,mesos >/tmp/mesos-slave.log 2>&1 &");
             logger.info("[SUCCESS] MesosSlave (1/1) successfuly connected to 127.0.0.1:5050");
         } catch (IOException ex) {
             logger.error("[FATAL] Error on starting MesosSlave 1/1");
