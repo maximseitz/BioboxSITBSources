@@ -23,6 +23,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import org.bioboxes.sitb.beans.Assembler;
+import org.bioboxes.sitb.mesos.BioboxesMesos;
 import org.primefaces.context.RequestContext;
 
 /**
@@ -44,7 +45,7 @@ public class SessionController implements Serializable {
 
     @PostConstruct
     public void init() {
-        assembler = new ArrayList<Assembler>();
+        assembler = new ArrayList<>();
         assembler.add(new Assembler(1, "bioboxes/megahit"));
         assembler.add(new Assembler(2, "bioboxes/sparse"));
         assembler.add(new Assembler(3, "bioboxes/sga"));
@@ -78,22 +79,21 @@ public class SessionController implements Serializable {
                         new File("/tmp/input_data").mkdir();
                         new File("/tmp/output_data").mkdir();
 
-                        /**
+                        try ( /**
                          * Generate yaml file.
-                         */
-                        PrintWriter pw = new PrintWriter("/tmp/input_data/biobox.yaml");
-                        String yaml_content = "---\n"
-                                + "version: \"0.9.0\"\n"
-                                + "arguments:\n"
-                                + "  - fastq:\n"
-                                + "    - value: \"/bbx/input/reads.fq.gz\"\n"
-                                + "      id: \"pe_1\"\n"
-                                + "      type: paired\n"
-                                + "  - fragment_size:\n"
-                                + "    - value: 240\n"
-                                + "      id: pe_1";
-                        pw.println(yaml_content);
-                        pw.close();
+                         */ PrintWriter pw = new PrintWriter("/tmp/input_data/biobox.yaml")) {
+                            String yaml_content = "---\n"
+                                    + "version: \"0.9.0\"\n"
+                                    + "arguments:\n"
+                                    + "  - fastq:\n"
+                                    + "    - value: \"/bbx/input/reads.fq.gz\"\n"
+                                    + "      id: \"pe_1\"\n"
+                                    + "      type: paired\n"
+                                    + "  - fragment_size:\n"
+                                    + "    - value: 240\n"
+                                    + "      id: pe_1";
+                            pw.println(yaml_content);
+                        }
 
                         /**
                          * Get reads.fq.gz.
@@ -101,17 +101,15 @@ public class SessionController implements Serializable {
                         URL inputData = new URL("https://www.dropbox.com/s/uxgn6cqngctqv74/reads.fq.gz?dl=1");
                         URLConnection con = inputData.openConnection();
 
-                        BufferedInputStream br = new BufferedInputStream(con.getInputStream());
-                        FileOutputStream fout = new FileOutputStream("/tmp/input_data/reads.fq.gz");
-
-                        int i = 0;
-                        byte[] bytesIN = new byte[300000];
-
-                        while ((i = br.read(bytesIN)) >= 0) {
-                            fout.write(bytesIN, 0, i);
+                        FileOutputStream fout;
+                        try (BufferedInputStream br = new BufferedInputStream(con.getInputStream())) {
+                            fout = new FileOutputStream("/tmp/input_data/reads.fq.gz");
+                            int i = 0;
+                            byte[] bytesIN = new byte[300000];
+                            while ((i = br.read(bytesIN)) >= 0) {
+                                fout.write(bytesIN, 0, i);
+                            }
                         }
-
-                        br.close();
                         fout.close();
 
                         /**
@@ -126,16 +124,14 @@ public class SessionController implements Serializable {
                                 + " default "
                                 + "2>&1");
 
-                        BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-                        String inputLine = "";
-
-                        while ((inputLine = in.readLine()) != null) {
-                            result.append(inputLine);
-                            result.append("<br />");
+                        try (BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                            String inputLine = "";
+                            
+                            while ((inputLine = in.readLine()) != null) {
+                                result.append(inputLine);
+                                result.append("<br />");
+                            }
                         }
-
-                        in.close();
                         process.destroy();
 
                         readCompletely = true;
@@ -148,6 +144,12 @@ public class SessionController implements Serializable {
             );
             executeAndReadThread.start();
         }
+    }
+    
+    public void startMesos() {
+        BioboxesMesos.startMesosMaster();
+        BioboxesMesos.startMesosSlave();
+        BioboxesMesos.startMesosNetwork("hello-world", 2);
     }
 
     

@@ -61,7 +61,18 @@
                             </p:column>
 
                             <f:facet name="footer">
-                                <p:commandButton action="#{sessionController.startBioBox}" onclick="PF('poller').start()" icon="ui-icon-search" value="Start BioBox" />
+                                <p:splitButton value="Start BioBox" action="#{sessionController.startBioBox}"  onclick="PF('poller').start();" icon="ui-icon-search" >
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <p:graphicImage style="padding-top: 2% ; width: 50px; height: 50px;" value="../images/mesos.png" />
+                                            </td>
+                                            <td>
+                                                <p:menuitem value="Start with Mesos (locally)" action="#{sessionController.startMesos}" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </p:splitButton>
                             </f:facet>
 
                         </p:dataTable>
