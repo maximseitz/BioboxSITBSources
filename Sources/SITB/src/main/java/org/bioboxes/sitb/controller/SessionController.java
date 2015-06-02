@@ -28,7 +28,7 @@ import org.primefaces.context.RequestContext;
 
 /**
  *
- * @author jsteiner
+ * @author jsteiner and mugarov
  */
 @ManagedBean
 @SessionScoped
