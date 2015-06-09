@@ -34,63 +34,98 @@
                 <p:layoutUnit position="east" size="200" style="border: 0 !important;">
                 </p:layoutUnit>
 
+
+
+
                 <p:layoutUnit position="center" style="border: 0 !important;">
+                    <!-- First TabView - Overview of Bioboxes, Mesos and ... -->
+                    <p:tabView>
+                        <p:tab title="BioBoxes">
+                            <h:panelGrid columns="2" cellpadding="10">
+                                <!-- Second Tabview - Overview of Assembler .... -->
+                                <p:tabView orientation="left">
+                                    <!-- Assembler Tab OPEN -->
+                                    <p:tab title="Assembler">
+                                        <h:panelGrid columns="1" cellpadding="10">
+                                            <h3 style="margin-top:0">Welcome to the BioBoxes GUI</h3>
 
-                    <h3 style="margin-top:0">Welcome to the BioBoxes GUI</h3>
+                                            <p:panel id="assemblerPanel" >
 
-                    <p:panel id="assemblerPanel" >
+                                                <p:dataTable id="assemblerDT" 
+                                                             var="assembler" 
+                                                             value="#{sessionController.assembler}" 
+                                                             selection="#{sessionController.selectedAssembler}" 
+                                                             selectionMode="single"
+                                                             rowKey="#{assembler.id}"
+                                                             rendered="#{sessionController.readCompletely eq false and sessionController.active eq false}">
 
-                        <p:dataTable id="assemblerDT" 
-                                     var="assembler" 
-                                     value="#{sessionController.assembler}" 
-                                     selection="#{sessionController.selectedAssembler}" 
-                                     selectionMode="single"
-                                     rowKey="#{assembler.id}"
-                                     rendered="#{sessionController.readCompletely eq false and sessionController.active eq false}">
+                                                    <f:facet name="header">
+                                                        Overview of all available BioBoxes-Assembler
+                                                    </f:facet>
 
-                            <f:facet name="header">
-                                Overview of all available BioBoxes-Assembler
-                            </f:facet>
+                                                    <p:column headerText="Assembler ID">
+                                                        <h:outputText value="#{assembler.id}" />
+                                                    </p:column>
 
-                            <p:column headerText="Assembler ID">
-                                <h:outputText value="#{assembler.id}" />
-                            </p:column>
+                                                    <p:column headerText="Assembler Name">
+                                                        <h:outputText value="#{assembler.name}" />
+                                                    </p:column>
 
-                            <p:column headerText="Assembler Name">
-                                <h:outputText value="#{assembler.name}" />
-                            </p:column>
+                                                    <f:facet name="footer">
+                                                        <p:splitButton value="Start BioBox" action="#{sessionController.startBioBox}"  onclick="PF('poller').start();" icon="ui-icon-search" >
+                                                            <table>
+                                                                <tr>
+                                                                    <td>
+                                                                        <p:graphicImage style="padding-top: 2% ; width: 50px; height: 50px;" value="../images/mesos.png" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <p:menuitem value="Start with Mesos (locally)" action="#{sessionController.startMesos}" />
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </p:splitButton>
+                                                    </f:facet>
 
-                            <f:facet name="footer">
-                                <p:splitButton value="Start BioBox" action="#{sessionController.startBioBox}"  onclick="PF('poller').start();" icon="ui-icon-search" >
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <p:graphicImage style="padding-top: 2% ; width: 50px; height: 50px;" value="../images/mesos.png" />
-                                            </td>
-                                            <td>
-                                                <p:menuitem value="Start with Mesos (locally)" action="#{sessionController.startMesos}" />
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </p:splitButton>
-                            </f:facet>
+                                                </p:dataTable>
 
-                        </p:dataTable>
+                                                <p:scrollPanel widgetVar="scroller" rendered="#{sessionController.readCompletely or sessionController.active}" style="width: 100%; height: 200px; background-color: black; color: white;">
+                                                    <h:outputText escape="false" id="result" value="#{sessionController.result}" styleClass="preformatted" />
+                                                </p:scrollPanel>
 
-                        <p:scrollPanel widgetVar="scroller" rendered="#{sessionController.readCompletely or sessionController.active}" style="width: 100%; height: 200px; background-color: black; color: white;">
-                            <h:outputText escape="false" id="result" value="#{sessionController.result}" styleClass="preformatted" />
-                        </p:scrollPanel>
+                                                <f:facet name="footer" >
+                                                    <center>
+                                                        <p:commandButton rendered="#{sessionController.readCompletely eq true}" value="Get Back to Assembler Selection" action="#{sessionController.resetExecution}" update="assemblerPanel" />
+                                                        <h:outputText rendered="#{sessionController.readCompletely eq false}" value="Please select one of the assemblers to start calculation!" />
+                                                    </center>
+                                                </f:facet>
+                                            </p:panel>
 
-                        <f:facet name="footer" >
-                            <center>
-                                <p:commandButton rendered="#{sessionController.readCompletely eq true}" value="Get Back to Assembler Selection" action="#{sessionController.resetExecution}" update="assemblerPanel" />
-                                <h:outputText rendered="#{sessionController.readCompletely eq false}" value="Please select one of the assemblers to start calculation!" />
-                            </center>
-                        </f:facet>
-                    </p:panel>
+                                            <p:poll widgetVar="poller" stop="#{sessionController.readCompletely}" autoStart="false" update="assemblerPanel" global="false" listener="#{sessionController.scroll()}" />
 
-                    <p:poll widgetVar="poller" stop="#{sessionController.readCompletely}" autoStart="false" update="assemblerPanel" global="false" listener="#{sessionController.scroll()}" />
-
+                                        </h:panelGrid>
+                                    </p:tab>
+                                    <!-- Assembler Tab END --> 
+                                    <p:tab title="Other">
+                                        
+                                    </p:tab>
+                                </p:tabView>
+                                <!-- Second Tabview END -->
+                            </h:panelGrid>
+                        </p:tab>
+                        <p:tab title="Other Stuff">
+                            <h:panelGrid columns="2" cellpadding="10">
+                                <p:graphicImage name="demo/images/godfather/godfather2.jpg" />
+                                <h:outputText value="Francis Ford Coppola's legendary..." />
+                            </h:panelGrid>
+                        </p:tab>
+                        <p:tab title="Maybe more stuff">
+                            <h:panelGrid columns="2" cellpadding="10">
+                                <p:graphicImage name="demo/images/godfather/godfather3.jpg" />
+                                <h:outputText value="After a break of more than 15 years..." />
+                            </h:panelGrid>
+                        </p:tab>
+                    </p:tabView>
+                    <!-- First Taview END -->
                 </p:layoutUnit>
 
             </p:layout>
