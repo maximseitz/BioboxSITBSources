@@ -7,7 +7,7 @@ package org.bioboxes.sitb.beans;
 
 /**
  *
- * @author jsteiner
+ * @author jsteiner and mugarov
  */
 public class Assembler {
 
@@ -15,9 +15,12 @@ public class Assembler {
 
     private String name;
     
-    public Assembler(int id, String name) {
+    private String description;
+    
+    public Assembler(int id, String name, String description) {
         this.id = id;
         this.name = name;
+        this.description = description;
     }
 
     public int getId() {
@@ -34,6 +37,16 @@ public class Assembler {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

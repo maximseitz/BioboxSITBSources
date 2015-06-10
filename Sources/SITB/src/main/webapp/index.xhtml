@@ -12,20 +12,21 @@
         </script>
     </h:head>
     <h:body>
-
+        
         <h:form id="form">
-
+            
             <p:growl id="growl" showDetail="true" autoUpdate="true" />
 
             <p:layout fullPage="true" >
 
                 <p:layoutUnit position="north" size="300" style="border: 0 !important;">
-                    <center>
+                                        <center>
                         <p:graphicImage style="padding-top: 2% ; width: 175px; height: 175px;" value="https://s3-us-west-1.amazonaws.com/bioboxes-images/logo/0.2.1/logo_only_dark.png" />
                     </center>
                 </p:layoutUnit>
 
                 <p:layoutUnit position="south" size="20" style="border: 0 !important;">
+                   
                 </p:layoutUnit>
 
                 <p:layoutUnit position="west" size="200" style="border: 0 !important;">
@@ -38,63 +39,138 @@
 
                     <h3 style="margin-top:0">Welcome to the BioBoxes GUI</h3>
 
-                    <p:panel id="assemblerPanel" >
+                    <!-- style for the p:steps-->
+                        <style type="text/css">
+                            .ui-steps .ui-steps-item {
+                                width: 24.85%;
+                            }
+                            .ui-state-highlight {
+                                text-shadow: none !important;
+                            }
 
-                        <p:dataTable id="assemblerDT" 
-                                     var="assembler" 
-                                     value="#{sessionController.assembler}" 
-                                     selection="#{sessionController.selectedAssembler}" 
-                                     selectionMode="single"
-                                     rowKey="#{assembler.id}"
-                                     rendered="#{sessionController.readCompletely eq false and sessionController.active eq false}">
+                            .ui-steps.custom .ui-steps-item .ui-steps-number {
+                                background-color: #0081c2;
+                                color: #FFFFFF;
+                                display: inline-block;
+                                width: 30px;
+                                border-radius: 10px;
+                                margin-top: -10px;
+                                margin-bottom: 10px;
+                            }
+                        </style>
 
-                            <f:facet name="header">
-                                Overview of all available BioBoxes-Assembler
-                            </f:facet>
+                    <p:poll widgetVar="poller" stop="#{sessionController.readCompletely}" autoStart="false" update="assemblerPanel" global="false" listener="#{sessionController.scroll()}" />
+<!--                    Wizard-->
+<!-- better step=" { wizardControl.step}" and update the value to one p:steps - but does not work so i had to insert an extra p:steps into every tab of the p:wizard -->
+                    <p:wizard flowListener="#{wizardControl.onFlowProcess}" showStepStatus="false" id="wizard" >
+                        <p:tab id="assemblerChoice" title="Assembler"  >
+                            <p:steps id="stepper0" activeIndex="0" styleClass="custom">
+                                <p:menuitem value="Select Assembler" />
+                                <p:menuitem value="Select Data" />
+                                <p:menuitem value="Progress" />
+                                <p:menuitem value="Download" />
+                            </p:steps>
+                            <p:panel header="Chooose Assembler">
+                                <p:messages />
+                                <p:accordionPanel>
+                                   <p:tab title ="Choose your Assembler">
+                                            <p:dataTable id="assemblerDT" 
+                                                resizableColumns="true"
+                                                var="assembler" 
+                                                value="#{sessionController.assembler}" 
+                                                selection="#{sessionController.selectedAssembler}" 
+                                                selectionMode="single"
+                                                rowKey="#{assembler.id}"
+                                                rendered="#{sessionController.readCompletely eq false and sessionController.active eq false}">
 
-                            <p:column headerText="Assembler ID">
-                                <h:outputText value="#{assembler.id}" />
-                            </p:column>
+                                           <f:facet name="header">
+                                               Overview of all available BioBoxes-Assembler
+                                                
+                                           </f:facet>
+                                       
+                                           <p:column headerText="ID">
+                                               <h:outputText value="#{assembler.id}" />
+                                           </p:column>
 
-                            <p:column headerText="Assembler Name">
-                                <h:outputText value="#{assembler.name}" />
-                            </p:column>
+                                           <p:column headerText="Name">
+                                               <h:outputText value="#{assembler.name}" />
+                                           </p:column>
+                                           <p:column headerText="Description">
+                                               <h:outputText value="#{assembler.description}" />
+                                           </p:column>
+                                       </p:dataTable>
+                                   </p:tab>
+                               </p:accordionPanel>
+                            </p:panel>
+                        </p:tab>
 
-                            <f:facet name="footer">
-                                <p:splitButton value="Start BioBox" action="#{sessionController.startBioBox}"  onclick="PF('poller').start();" icon="ui-icon-search" >
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <p:graphicImage style="padding-top: 2% ; width: 50px; height: 50px;" value="../images/mesos.png" />
-                                            </td>
-                                            <td>
-                                                <p:menuitem value="Start with Mesos (locally)" action="#{sessionController.startMesos}" />
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </p:splitButton>
-                            </f:facet>
+                        <p:tab id="input" title="Input">
+                            <p:steps id="stepper1" activeIndex="1" styleClass="custom">
+                                <p:menuitem value="Select Assembler" />
+                                <p:menuitem value="Select Data" />
+                                <p:menuitem value="Progress" />
+                                <p:menuitem value="Download" />
+                            </p:steps>
+                            <p:panel header="Choose your input from a filepath ">
+                                <p:messages />
+                                <h3 style="margin-top:0">Input String</h3>
+                                    <p>Hint: Currently only .fastq-files are valid for using bioboxes.</p>
+                                    <p:growl id="message" showDetail="true" />
+ 
+                                    <p:fileUpload fileUploadListener="#{sessionController.fileManager.handleFileUpload}" update="path"/>
+                                    <p:commandButton value="Submit" ajax ="false"/>
+                                    <br/>
+                                     <h:outputLabel for="path" value="Path:" style="font-weight:bold" />
+                                     <p:inputText id="path" value="#{sessionController.fileManager.inputPath}"/><br />
+                                     <h:outputText value="You can upload a file or write down the path." />
+                            </p:panel>
+                        </p:tab>
 
-                        </p:dataTable>
+                        <p:tab id="confirm" title="Confirmation">
+                            <p:steps id="stepper2" activeIndex="2" styleClass="custom">
+                                <p:menuitem value="Select Assembler" />
+                                <p:menuitem value="Select Data" />
+                                <p:menuitem value="Progress" />
+                                <p:menuitem value="Download" />
+                            </p:steps>
+                            <p:panel header="Confirmation">
+                                <f:facet name="footer">
+                                    <p:splitButton value="Start BioBox" action="#{sessionController.startBioBox}" onclick="PF('poller').start();"  icon="ui-icon-search" >
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <p:graphicImage style="padding-top: 2% ; width: 50px; height: 50px;" value="../images/mesos.png" />
+                                                </td>
+                                                <td>
+                                                    <p:menuitem value="Start with Mesos (locally)" action="#{sessionController.startMesos}" />
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </p:splitButton>
+                                </f:facet>
 
+<!--                                <p:commandButton value="Submit" actionListener="#{userWizard.save}" update="growl" process="@this"/>-->
+                            </p:panel>
+                        </p:tab>
+                    </p:wizard>
+
+<!-- assembler Panel-->
+                     <p:panel id="assemblerPanel" >
                         <p:scrollPanel widgetVar="scroller" rendered="#{sessionController.readCompletely or sessionController.active}" style="width: 100%; height: 200px; background-color: black; color: white;">
                             <h:outputText escape="false" id="result" value="#{sessionController.result}" styleClass="preformatted" />
                         </p:scrollPanel>
 
                         <f:facet name="footer" >
                             <center>
-                                <p:commandButton rendered="#{sessionController.readCompletely eq true}" value="Get Back to Assembler Selection" action="#{sessionController.resetExecution}" update="assemblerPanel" />
+                                <p:commandButton rendered="#{sessionController.readCompletely eq true}"  value="Get Back to Assembler Selection" action="#{sessionController.resetExecution}" update="assemblerPanel" />
                                 <h:outputText rendered="#{sessionController.readCompletely eq false}" value="Please select one of the assemblers to start calculation!" />
                             </center>
                         </f:facet>
                     </p:panel>
 
-                    <p:poll widgetVar="poller" stop="#{sessionController.readCompletely}" autoStart="false" update="assemblerPanel" global="false" listener="#{sessionController.scroll()}" />
-
                 </p:layoutUnit>
-
-            </p:layout>
-
+                
+            </p:layout>  
         </h:form>
     </h:body>
 </html>

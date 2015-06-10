@@ -23,6 +23,8 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import org.bioboxes.sitb.beans.Assembler;
+import org.bioboxes.sitb.beans.FileManager;
+import org.bioboxes.sitb.beans.AssemblerHandler;
 import org.bioboxes.sitb.mesos.BioboxesMesos;
 import org.primefaces.context.RequestContext;
 
@@ -34,9 +36,11 @@ import org.primefaces.context.RequestContext;
 @SessionScoped
 public class SessionController implements Serializable {
 
-    private List<Assembler> assembler;
+    private AssemblerHandler assHand;
 
     private Assembler selectedAssembler;
+    
+    private FileManager fileManager;
 
     private final StringBuffer result = new StringBuffer();
 
@@ -45,13 +49,14 @@ public class SessionController implements Serializable {
 
     @PostConstruct
     public void init() {
-        assembler = new ArrayList<>();
-        assembler.add(new Assembler(1, "bioboxes/megahit"));
-        assembler.add(new Assembler(2, "bioboxes/sparse"));
-        assembler.add(new Assembler(3, "bioboxes/sga"));
-
-        readCompletely = false;
-        active = false;
+        this.setFileManager(new FileManager());
+        
+        // init assemblers
+        this.assHand = new AssemblerHandler();
+        this.assHand.load();
+        
+        this.readCompletely = false;
+        this.active = false;
 
     }
 
@@ -61,8 +66,8 @@ public class SessionController implements Serializable {
             fc.addMessage(null, new FacesMessage("You have to select an Assembler first ..."));
         } else {
             final String assemblerName = selectedAssembler.getName();
-            active = true;
-            readCompletely = false;
+            this.active = true;
+            this.readCompletely = false;
 
             /**
              * Update JSF components via anonymous Thread-class.
@@ -154,9 +159,9 @@ public class SessionController implements Serializable {
 
     
     public void resetExecution() {
-        readCompletely = false;
-        active = false;
-        result.delete(0, result.length());
+        this.readCompletely = false;
+        this.active = false;
+        this.result.delete(0, this.result.length());
     }
     
     public void scroll() {
@@ -165,23 +170,23 @@ public class SessionController implements Serializable {
     }
 
     public Assembler getSelectedAssembler() {
-        return selectedAssembler;
+        return this.selectedAssembler;
     }
 
     public void setSelectedAssembler(Assembler selectedAssembler) {
         this.selectedAssembler = selectedAssembler;
     }
 
-    public List<Assembler> getAssembler() {
-        return assembler;
+    public ArrayList<Assembler> getAssembler() {
+        return this.assHand.getAssemblers();
     }
 
-    public void setAssembler(List<Assembler> assembler) {
-        this.assembler = assembler;
+    public void setAssembler(ArrayList<Assembler> assemblers) {
+        this.assHand.setAssemblers(assemblers);
     }
 
     public boolean isReadCompletely() {
-        return readCompletely;
+        return this.readCompletely;
     }
 
     public void setReadCompletely(boolean readCompletely) {
@@ -189,7 +194,7 @@ public class SessionController implements Serializable {
     }
 
     public boolean isActive() {
-        return active;
+        return this.active;
     }
 
     public void setActive(boolean active) {
@@ -199,5 +204,15 @@ public class SessionController implements Serializable {
     public StringBuffer getResult() {
         return result;
     }
+
+    public FileManager getFileManager() {
+        return fileManager;
+    }
+
+    public void setFileManager(FileManager fileManager) {
+        this.fileManager = fileManager;
+    }
+
+    
 
 }
