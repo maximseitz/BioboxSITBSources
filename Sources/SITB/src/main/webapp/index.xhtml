@@ -62,7 +62,7 @@
                     <p:poll widgetVar="poller" stop="#{sessionController.readCompletely}" autoStart="false" update="assemblerPanel" global="false" listener="#{sessionController.scroll()}" />
 <!--                    Wizard-->
 <!-- better step=" { wizardControl.step}" and update the value to one p:steps - but does not work so i had to insert an extra p:steps into every tab of the p:wizard -->
-                    <p:wizard flowListener="#{wizardControl.onFlowProcess}" showStepStatus="false" id="wizard" >
+                    <p:wizard flowListener="#{sessionController.wizCtrl.onFlowProcess}" showStepStatus="false" id="wizard" >
                         <p:tab id="assemblerChoice" title="Assembler"  >
                             <p:steps id="stepper0" activeIndex="0" styleClass="custom">
                                 <p:menuitem value="Select Assembler" />
@@ -118,11 +118,15 @@
                                     <p:growl id="message" showDetail="true" />
  
                                     <p:fileUpload fileUploadListener="#{sessionController.fileManager.handleFileUpload}" update="path"/>
-                                    <p:commandButton value="Submit" ajax ="false"/>
+                                    <p:commandButton value="Submit" ajax ="false" update="absPath"/>
                                     <br/>
                                      <h:outputLabel for="path" value="Path:" style="font-weight:bold" />
-                                     <p:inputText id="path" value="#{sessionController.fileManager.inputPath}"/><br />
+                                     <p:inputText id="path" value="#{sessionController.fileManager.userPlainPath}"/>
+                                     <p:commandButton id="pathApply" value="Apply path" actionListener="#{sessionController.fileManager.handlePlainPathInput}" update="absPath" />                                    
+                                     <br />
                                      <h:outputText value="You can upload a file or write down the path." />
+                                     <br/>
+                                     <p:outputLabel id="absPath" value="Current path or file: #{sessionController.fileManager.shownPath}" />;
                             </p:panel>
                         </p:tab>
 

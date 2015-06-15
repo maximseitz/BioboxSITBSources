@@ -15,30 +15,29 @@ import org.primefaces.event.FlowEvent;
  * @author Mark
  */
 
-@ManagedBean
-@ViewScoped
+
 public class WizardControl implements Serializable{
-    private boolean skip;
-
+    private boolean pathApplied;
     
-    public boolean isSkip() {
-       return this.skip;
+    public WizardControl(){
+        this.pathApplied = false;
     }
- 
-    public void setSkip(boolean skip) {
-        this.skip = skip;
+    
+    public String onFlowProcess(FlowEvent event) {
+        if(event.getOldStep().equals("input") && !this.pathApplied){
+            return event.getOldStep();
+        }
+        else{
+            return event.getNewStep();
+        }
     }
 
-     
-    public String onFlowProcess(FlowEvent event) {
-        if(skip) {
-            this.skip = false;   //reset in case user goes back
-            return "confirm";
-        }
-        else {
-             return event.getNewStep();
-        }
-        
+    public boolean isPathApplied() {
+        return pathApplied;
+    }
+
+    public void setPathApplied(boolean pathApplied) {
+        this.pathApplied = pathApplied;
     }
 
 }

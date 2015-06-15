@@ -37,6 +37,8 @@ import org.primefaces.context.RequestContext;
 public class SessionController implements Serializable {
 
     private AssemblerHandler assHand;
+    
+    private WizardControl wizCtrl;
 
     private Assembler selectedAssembler;
     
@@ -49,7 +51,9 @@ public class SessionController implements Serializable {
 
     @PostConstruct
     public void init() {
-        this.setFileManager(new FileManager());
+        
+        this.setWizCtrl(new WizardControl());
+        this.setFileManager(new FileManager(this.getWizCtrl()));
         
         // init assemblers
         this.assHand = new AssemblerHandler();
@@ -211,6 +215,14 @@ public class SessionController implements Serializable {
 
     public void setFileManager(FileManager fileManager) {
         this.fileManager = fileManager;
+    }
+
+    public WizardControl getWizCtrl() {
+        return wizCtrl;
+    }
+
+    public void setWizCtrl(WizardControl wizCtrl) {
+        this.wizCtrl = wizCtrl;
     }
 
     
